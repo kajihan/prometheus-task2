@@ -6,6 +6,6 @@
     "author": "SoftServe IT Academy",
     "license": "ISC",
     "devDependencies": {
-        "cypress": "^12.17.4"
+        "cypress": "^13.17.0"
     }
 }

@@ -4,7 +4,7 @@ describe('Prometheus Test', () => {
     const someMetric = 'container_cpu_usage_seconds_total';
     cy.visit(Cypress.env('PROMETHEUS_URL'));
     cy.get('div.cm-line').type(someMetric);
-    cy.get('button.execute-btn').click();
+    cy.contains('button', 'Execute').click();
   });
 
   it('The container with "webapp" service incuded to monitoring', () => {
