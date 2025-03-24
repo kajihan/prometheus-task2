@@ -4,17 +4,25 @@ const views = require('koa-views');
 const Koa = require('koa');
 const redis = require('./db/redis');
 const appPort = require('../config/app');
+const client = require('prom-client'); // Added for Prometheus
 
 const app = module.exports = new Koa();
 
-// setup views, appending .ejs
-// when no extname is given to render()
+// Prometheus setup
+const register = new client.Registry();
+client.collectDefaultMetrics({ register }); // Collect default metrics (CPU, memory, etc.)
 
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  registers: [register],
+});
+
+// Setup views
 app.use(serve(`${__dirname}/public`));
 app.use(views(path.join(__dirname, '/views'), { extension: 'ejs' }));
 
-// dummy data
-
+// Dummy data
 const user = {
   name: {
     first: 'Tobi',
@@ -24,10 +32,19 @@ const user = {
   age: 3
 };
 
-// render
+// Metrics endpoint
+app.use(async (ctx, next) => {
+  if (ctx.url === '/metrics') {
+    ctx.set('Content-Type', register.contentType);
+    ctx.body = await register.metrics();
+  } else {
+    await next();
+  }
+});
 
-app.use(async function(ctx) {
-  
+// Render routes
+app.use(async (ctx) => {
+  httpRequestCounter.inc(); // Increment request counter for every request
   if (ctx.url === '/redis') {
     const data = await redis.ping();
     return ctx.render('redis', { redisData: data });
