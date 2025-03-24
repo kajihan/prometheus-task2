@@ -14,7 +14,8 @@
     "koa": "^2.14.2",
     "koa-static": "^5.0.0",
     "koa-views": "^8.1.0",
-    "redis": "^4.6.7"
+    "redis": "^4.6.7",
+    "prom-client": "^14.2.0"
   },
   "devDependencies": {
     "jest": "^29.6.2",
